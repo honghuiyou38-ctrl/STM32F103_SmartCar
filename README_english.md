@@ -1,107 +1,111 @@
-# STM32F103 Smart Car v1.0
+# STM32F103 Based Smart Car (STM32f103_smartcar_v1.0)
 
-## MCU:STM32F103C8T6 (HCLK: 72 MHz)
+## MCU: STM32F103C8T6 (HCLK Clock Tree: 72MHz)
 
 ## Project Overview
-This is the first version of a smart car platform based on the STM32F103 microcontroller. The current version supports Bluetooth remote control, DC motor driving, OLED display, and motor lock mode. It can serve as a basic platform for smart car development.
+This is the initial version developed with STM32F103. It has implemented basic Bluetooth remote control, motor drive, OLED display, car line tracking and gyroscope attitude calculation. This project can serve as a basic platform for smart car development.
 
----
-
-Features
-
-- Developed using the STM32 HAL Library
-- UART DMA + UART Idle Line Reception
-- Hardware I2C OLED Driver
-- Dual-channel PWM Motor Control via TB6612
-- Modular Software Design
+## Project Features
+• Developed with STM32 HAL Library
+• UART DMA + Idle Interrupt for Bluetooth data reception
+• Hardware I2C driver for OLED screen
+• TB6612 dual-channel PWM speed regulation
+• Modular code architecture
 
 ---
 
 ## Functions
-
-Available
-
 - Bluetooth Remote Control
-- OLED Display (Hardware I2C)
+- Hardware I2C Driven OLED Display
 - TB6612 Motor Driver
-- Motor Lock Mode
+- Mode Switch Button
+- 8-channel Line Tracking (Under Development)
+- MPU6050 Gyroscope Attitude Solving
 
-Under Development
-- 8-Channel Line Tracking
-- PID Speed Control
-
----
-
-## Hardware：
-
-### 1.Motor Driver (TB6612)
-
-|Function| MCU Pin| Description|
-|--------|--------|------------|
-|Right Motor PWMA| PA6 (TIM3_CH1)| PWM Output (10 ms period)|
-|Left Motor PWMB| PA7 (TIM3_CH2)| PWM Output|
-|Right Motor AIN1| PB12| GPIO Output (HIGH = Forward, LOW = Reverse)|
-|Right Motor AIN2| PB13| GPIO Output|
-|Left Motor BIN1| PB14| GPIO Output|
-|Left Motor BIN2| PB15| GPIO Output|
-> TB6612 Logic: AIN1 = HIGH and AIN2 = LOW → Forward; reversing the levels rotates the motor in the opposite direction. PWM signals are generated using the STM32 HAL Library.»
+Under Development:
+- PID Closed-Loop Control
 
 ---
 
-### 2. Encoder (Hall Sensor ×2, 13-wire)
+## Hardware Description
 
-Under development.
+### 1. Motor Driver (TB6612)
+
+| Function | MCU Pin | Description |
+|------|---------|------|
+| Right Motor PWMA | PA6 (TIM3 CH1) | PWM signal, period: 10ms |
+| Left Motor PWMB | PA7 (TIM3 CH2) | PWM signal |
+| Right Motor Direction AIN1 | PB12 | GPIO output, High = Forward / Low = Reverse |
+| Right Motor Direction AIN2 | PB13 | GPIO output |
+| Left Motor Direction BIN1 | PB14 | GPIO output |
+| Left Motor Direction BIN2 | PB15 | GPIO output |
+> TB6612 Logic: AIN1=High + AIN2=Low → Forward, vice versa for reverse. PWM signals are generated directly by HAL library.
 
 ---
 
-### OLED Display (SSD1306, 128×64, Hardware I2C)
+### 2. 8-Channel Line Tracking Sensor Module
+| Sensor No. | MCU Pin | Position on Car Body |
+|--------|---------|---------|
+| X1 (Leftmost) | PA1 | Left Channel 1 |
+| X2 | PA2 | Left Channel 2 |
+| X3 | PA3 | Left Channel 3 |
+| X4 | PA4 | Left Channel 4 |
+| X5 | PA5 | Right Channel 4 |
+| X6 | PB0 | Right Channel 3 |
+| X7 | PB1 | Right Channel 2 |
+| X8 (Rightmost) | PA15 | Right Channel 1 |
+> Low level (GPIO read 0) detected on black track line, High level on white ground. Sensors are mounted at the front of the car, about 20cm ahead of rear wheels.
 
-|Function| MCU Pin| Description|
-|--------|--------|------------|
-| **SCL** | PB6 | I2C1 Clock |
-| **SDA** | PB7 | I2C1 Data |
-| **VCC** | 3.3V | — |
-| **GND** | GND | — |
+---
+
+### 3. OLED Display (SSD1306, 128×64, Hardware I2C)
+
+| Function | MCU Pin | Description |
+|------|---------|------|
+| SCL | PB6 | Hardware I2C1 Clock Line |
+| SDA | PB7 | Hardware I2C1 Data Line |
+| VCC | 3.3V | Power Supply |
+| GND | GND | Ground |
 
 ---
 
 ### 4. Bluetooth Module (HC-05 / HC-06)
 
+| Function | MCU Pin | Description |
+|------|---------|------|
+| RXD | PA9 | USART1 TX Pin |
+| TXD | PA10 | USART1 RX Pin |
+| VCC | 5V | Power Supply |
+| GND | GND | Ground |
 
-| Function| MCU Pin| Description |
-|---------|--------|-------------|
-| **RXD** | PA9 | USART1_TX |
-| **TXD** | PA10 | USART1_RX |
-| **VCC** | 5V | — |
-| **GND** | GND | — |
-
->Communication:
-- USART1 (115200 bps)
-- UART DMA + Idle Line Reception
-- Supports the following commands:
-  - "front"
-  - "back"
-  - "left"
-  - "right"
-  - "stop"
----
-
-### 5. Button & LED
-
-| Module| MCU Pin| Trigger| Description |
-|-------|--------|--------|-------------|
-|KEY0| PA0| Active Low| External interrupt input for motor lock mode|
-|LED1| PA12| Active High| Indicates the motor lock status|
+> Communication Specifications:
+- USART1, Baud rate: 115200 bps
+- Data reception via UART DMA + Idle Interrupt
+- Supported control commands: front, back, left, right, stop, MPUON, MPUOFF, etc.
 
 ---
 
-## Software：
-### PC
+### 5. Gyroscope Module (MPU6050)
+
+| Function | MCU Pin | Description |
+|------|---------|------|
+| I2C SDA | PB11 | Fast-mode Hardware I2C Data Line |
+| I2C SCL | PB10 | Fast-mode Hardware I2C Clock Line |
+| AD0 | GND | I2C Address = 0x68 |
+| VCC | 3.3V | Power Supply |
+| GND | GND | Ground |
+
+---
+
+### 6. Buttons & LED Indicators
+
+## Software Environment
+### PC Side:
 - STM32CubeIDE
-- Serial Port Assistant
+- Serial Port Assistant Tool
 
-### Mobile
+### Mobile Side:
 - HC Bluetooth Assistant
 
-## Framework
+## Library Used
 - STM32 HAL Library

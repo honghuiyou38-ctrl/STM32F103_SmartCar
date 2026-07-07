@@ -31,6 +31,8 @@
 #include "oled.h"
 #include "hc_cont.h"
 #include "key.h"
+#include "trace.h"
+#include "mpu6050.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,7 +56,7 @@
 uint8_t wheel_PWM_A=0;
 uint8_t wheel_PWM_B=0;
 uint8_t mode_flag=1;
-unsigned char buf[20]={0};
+unsigned char buf[60]={0};
 uint8_t OLED_refresh_flag=0;
 _Bool LED1_State=0;
 uint8_t UART_recv_idle[UART_recv_idle_Size]={0};
@@ -105,6 +107,7 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
@@ -114,59 +117,63 @@ int main(void)
   OLED_Init();
   OLED_Clear();
 
+  MPU6050_Init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+//	  MPU6050_Read_Accel();
+//	  MPU6050_Read_Gyro();
+//	  printf("AX=%f,AY=%f,AZ=%f,GX=%f,GY=%f,GZ=%f\n\r",Ax,Ay,Az,Gx,Gy,Gz);
+	  MPU6050_Read_Result();
 
-	  refresh_oled();
+	      // 捕捉拿到姿态值，直接用
+	      float car_pitch = pitch;  // 抓取俯仰角，给直立PID
+	      float car_roll  = roll;
+	      float car_yaw   = yaw;
 
-	  if(mode_flag==1||mode_flag==2)
-	  {
-		  if(mode_flag==1)
-		  {
-			  direction_Forward();
-			  motor_PWM(wheel_PWM_A , wheel_PWM_B);
-		  }
-
-		  if(mode_flag==2)
-		  {
-			  direction_back();
-			  motor_PWM(wheel_PWM_A , wheel_PWM_B);
-		  }
-
-		  OLED_ShowString(0,0,"speed:",16);
-		  sprintf(buf,"PWM_A:%u,PWM_B:%u", (uint8_t)wheel_PWM_A, (uint8_t)wheel_PWM_B);
-		  OLED_ShowString(0,4,buf,16);
-	  }
+//	      printf("pitch:%.2f roll:%.2f yaw:%.2f\r\n",pitch,roll,yaw);
+	      sprintf(buf,"pitch:%.2f roll:%.2f yaw:%.2f",pitch,roll,yaw);
+	     			  OLED_ShowString(0,0,buf,8);
 
 
-/*-------------按钮锁电机-------------*/
-	  if(LED1_State==1)
-	  {
-		  mode_flag=0;
-		  wheel_PWM_A=0;
-		  wheel_PWM_B=0;
-		  direction_Stop();
-		  OLED_ShowCHinese(0+10,0,0);
-		  OLED_ShowCHinese(18+10,0,1);
-		  OLED_ShowCHinese(36+10,0,2);
-		  OLED_ShowCHinese(54+10,0,3);
-		  OLED_ShowCHinese(72+10,0,4);
-		  OLED_ShowCHinese(0+10,2,0);
-		  OLED_ShowCHinese(18+10,2,1);
-		  OLED_ShowCHinese(36+10,2,2);
-		  OLED_ShowCHinese(54+10,2,3);
-		  OLED_ShowCHinese(72+10,2,4);
-	  }
-/*-------------按钮锁电机------------*/
+//	  refresh_oled();
+//	  if(mode_flag==1||mode_flag==2)
+//	  {
+//		  if(mode_flag==1)
+//		  {
+//			  direction_Forward();
+//			  motor_PWM(wheel_PWM_A , wheel_PWM_B);
+//		  }
+//
+//		  if(mode_flag==2)
+//		  {
+//			  direction_back();
+//			  motor_PWM(wheel_PWM_A , wheel_PWM_B);
+//		  }
+//
+//			  OLED_ShowString(0,0,"speed:",16);
+//			  sprintf(buf,"PWM_A:%u,PWM_B:%u", (uint8_t)wheel_PWM_A, (uint8_t)wheel_PWM_B);
+//			  OLED_ShowString(0,4,buf,16);
+//	  }
+//
+///*-------------循迹模式-------------*/
+//	  if(LED1_State==1)
+//	  {
+//		  mode_flag=0;
+//		  direction_Forward();
+//		  trace_task();
+//	  }
+//
+///*-------------循迹模式------------*/
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+	 }
   /* USER CODE END 3 */
 }
 

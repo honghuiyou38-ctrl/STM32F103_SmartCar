@@ -60,6 +60,20 @@ void Error_Handler(void);
 #define KEY0_Pin GPIO_PIN_0
 #define KEY0_GPIO_Port GPIOA
 #define KEY0_EXTI_IRQn EXTI0_IRQn
+#define X1_Pin GPIO_PIN_1
+#define X1_GPIO_Port GPIOA
+#define X2_Pin GPIO_PIN_2
+#define X2_GPIO_Port GPIOA
+#define X3_Pin GPIO_PIN_3
+#define X3_GPIO_Port GPIOA
+#define X4_Pin GPIO_PIN_4
+#define X4_GPIO_Port GPIOA
+#define X5_Pin GPIO_PIN_5
+#define X5_GPIO_Port GPIOA
+#define X6_Pin GPIO_PIN_0
+#define X6_GPIO_Port GPIOB
+#define X7_Pin GPIO_PIN_1
+#define X7_GPIO_Port GPIOB
 #define AIN1_Pin GPIO_PIN_12
 #define AIN1_GPIO_Port GPIOB
 #define AIN2_Pin GPIO_PIN_13
@@ -70,6 +84,8 @@ void Error_Handler(void);
 #define BIN2_GPIO_Port GPIOB
 #define LED1_Pin GPIO_PIN_12
 #define LED1_GPIO_Port GPIOA
+#define X8_Pin GPIO_PIN_15
+#define X8_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 
