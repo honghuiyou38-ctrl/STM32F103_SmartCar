@@ -19,7 +19,7 @@
 #define PWR_MGMT_2_REG 0x6C
 #define WHO_AM_I_REG 0x75
 
-//这是咱们的函数，初始化，读A，读G
+//函数，初始化，读A，读G
 void MPU6050_Init(void);
 void MPU6050_Read_Accel(void);
 void MPU6050_Read_Gyro(void);
