@@ -2,7 +2,7 @@
 
 extern TIM_HandleTypeDef htim3;
 
-static int weight[8]={-12,-5,-3,-1,1,3,5,12};
+static int weight[8]={-14,-5,-3,-1,1,3,5,14};
 uint8_t sensor[8];
 int Error_trace=0;
 int Last_Error_trace=0;
@@ -33,7 +33,7 @@ int trace_get_error()
 
 	for(i=0;i<8;i++)
 	{
-		if(sensor[i]==1)
+		if(sensor[i]==0)
 		{
 			sum_trace+=weight[i];
 			count_trace++;
@@ -61,13 +61,13 @@ void trace_task()
 	int PWM_base;
 	if(abs(Error_trace)>=4)
 	{
-		PWM_base=12;
+		PWM_base=20;
 	}
 	else
 	{
-		PWM_base=23;
+		PWM_base=25;
 	}
-	int kp=9;
+	int kp=5;
 
 	int PWM_A;
 	int PWM_B;
@@ -76,59 +76,8 @@ void trace_task()
 	trace_get_error();
 /*-------------------循迹logic----------------------------循迹logic-------------------循迹logic-------------------循迹logic--------------------------------------------------------*/
 
-
-//*--------------特殊转弯处理-------------*//
-	///*----------------右转特殊---------------*///
-	if(sensor[0]==1 && sensor[1]==1 && sensor[2]==0 && sensor[3]==0 && sensor[4]==0 && sensor[5]==0 && sensor[6]==0 && sensor[7]==0)
-	{
-		PWM_A=0;
-		PWM_B=45;
-	}
-	else if(sensor[0]==1 && sensor[1]==1 && sensor[2]==1 && sensor[3]==0 && sensor[4]==0 && sensor[5]==0 && sensor[6]==0 && sensor[7]==0)
-	{
-		PWM_A=0;
-		PWM_B=50;
-	}
-	else if(sensor[0]==1 && sensor[1]==1 && sensor[2]==1 && sensor[3]==1 && sensor[4]==0 && sensor[5]==0 && sensor[6]==0 && sensor[7]==0)
-	{
-		PWM_A=0;
-		PWM_B=55;
-	}
-	else if(sensor[0]==1 && sensor[1]==1 && sensor[2]==1 && sensor[3]==1 && sensor[4]==1 && sensor[5]==0 && sensor[6]==0 && sensor[7]==0)
-	{
-		PWM_A=0;
-		PWM_B=60;
-	}
-
-	///*----------------右转特殊---------------*///
-
-	///*----------------左转特殊---------------*///
-
-	else if(sensor[0]==0 && sensor[1]==0 && sensor[2]==0 && sensor[3]==1 && sensor[4]==1 && sensor[5]==1 && sensor[6]==1 && sensor[7]==1)
-	{
-		PWM_A=60;
-		PWM_B=0;
-	}
-	else if(sensor[0]==0 && sensor[1]==0 && sensor[2]==0 && sensor[3]==0 && sensor[4]==1 && sensor[5]==1 && sensor[6]==1 && sensor[7]==1)
-	{
-		PWM_A=55;
-		PWM_B=0;
-	}
-	else if(sensor[0]==0 && sensor[1]==0 && sensor[2]==0 && sensor[3]==0 && sensor[4]==0 && sensor[5]==1 && sensor[6]==1 && sensor[7]==1)
-	{
-		PWM_A=50;
-		PWM_B=0;
-	}
-	else if(sensor[0]==0 && sensor[1]==0 && sensor[2]==0 && sensor[3]==0 && sensor[4]==0 && sensor[5]==0 && sensor[6]==1 && sensor[7]==1)
-	{
-		PWM_A=45;
-		PWM_B=0;
-	}
-	///*----------------左转特殊----------------*///
-
-
 	///*--------------丢线/大角度偏离-------------*///
-	else if(sensor[0]==1 && sensor[1]==1 && sensor[2]==1 && sensor[3]==1 && sensor[4]==1 && sensor[5]==1 && sensor[6]==1 && sensor[7]==1)
+	if(sensor[0]==1 && sensor[1]==1 && sensor[2]==1 && sensor[3]==1 && sensor[4]==1 && sensor[5]==1 && sensor[6]==1 && sensor[7]==1)
 	{
 		PWM_A=Last_PWM_A;
 		PWM_B=Last_PWM_B;
@@ -143,16 +92,14 @@ void trace_task()
 		PWM_A=Last_PWM_A;
 		PWM_B=Last_PWM_B;
 	}
+
 	///*---------------丢线/大角度偏离-------------*///
-
-//*--------------特殊转弯处理-------------*//
-
 
 //*--------------常规循迹计算-------------*//
 	else
 	{
-		PWM_A=PWM_base+Error_trace*kp;
-		PWM_B=PWM_base-Error_trace*kp;
+		PWM_A=PWM_base-Error_trace*kp;
+		PWM_B=PWM_base+Error_trace*kp;
 
 		if(PWM_A>99){PWM_A=99;}
 		if(PWM_A<0){PWM_A=0;}
@@ -171,7 +118,6 @@ void trace_task()
 
 /*-------------------循迹logic----------------------------循迹logic-------------------循迹logic-------------------循迹logic--------------------------------------------------------*/
 }
-
 
 
 

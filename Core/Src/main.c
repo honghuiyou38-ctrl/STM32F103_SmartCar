@@ -33,6 +33,7 @@
 #include "key.h"
 #include "trace.h"
 #include "mpu6050.h"
+#include "shape.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,9 +57,11 @@
 uint8_t wheel_PWM_A=0;
 uint8_t wheel_PWM_B=0;
 uint8_t mode_flag=1;
+uint8_t mpu_flag=0;
 unsigned char buf[60]={0};
 uint8_t OLED_refresh_flag=0;
 _Bool LED1_State=0;
+_Bool mpu_Refresh=0;
 uint8_t UART_recv_idle[UART_recv_idle_Size]={0};
 
 /* USER CODE END PV */
@@ -108,9 +111,13 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   MX_I2C2_Init();
+  MX_TIM1_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, UART_recv_idle, UART_recv_idle_Size);
   HAL_NVIC_DisableIRQ(DMA1_Channel5_IRQn);
 
@@ -126,17 +133,15 @@ int main(void)
   while (1)
   {
 //	  MPU6050_Read_Result();
-//
-//	      float car_pitch = pitch;  // 抓取俯仰角，给直立PID
-//	      float car_roll  = roll;
-//	      float car_yaw   = yaw;
-//
-////	      printf("pitch:%.2f roll:%.2f yaw:%.2f\r\n",pitch,roll,yaw);
+//	      printf("pitch:%.2f roll:%.2f yaw:%.2f\r\n",pitch,roll,yaw);
 //	      sprintf(buf,"pitch:%.2f roll:%.2f yaw:%.2f",pitch,roll,yaw);
 //	     			  OLED_ShowString(0,0,buf,8);
 
+//	  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 5);
 
 	  refresh_oled();
+
+
 	  if(mode_flag==1||mode_flag==2)
 	  {
 		  if(mode_flag==1)
@@ -165,6 +170,9 @@ int main(void)
 	  }
 
 /*-------------循迹模式------------*/
+
+///*-------------陀螺仪训练------------*/
+
 
     /* USER CODE END WHILE */
 

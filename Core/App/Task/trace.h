@@ -7,6 +7,7 @@
 #include "stdint.h"
 #include "stdlib.h"
 
+
 /*-----------获取循迹模块信息---------*/
 void trace_get_value();
 /*-----------获取循迹模块信息---------*/
@@ -18,6 +19,5 @@ int trace_get_error();
 /*--------------任务逻辑------------*/
 void trace_task();
 /*--------------任务逻辑------------*/
-
 
 #endif

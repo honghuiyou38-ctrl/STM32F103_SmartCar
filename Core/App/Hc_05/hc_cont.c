@@ -75,19 +75,19 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 			OLED_refresh_flag=1;
 		}
 
-//		if(strcmp((char *)UART_recv_idle,"MPUON")==0)
-//		{
-//			mpu_flag=1;
-//			memset(UART_recv_idle,'\0',Size);
-//			mpu_Refresh=1;
-//		}
-//
-//		if(strcmp((char *)UART_recv_idle,"MPUOFF")==0)
-//		{
-//			mpu_flag=0;
-//			memset(UART_recv_idle,'\0',Size);
-//			mpu_Refresh=1;
-//		}
+		if(strcmp((char *)UART_recv_idle,"MPUON")==0)
+		{
+			mpu_flag=1;
+			memset(UART_recv_idle,'\0',Size);
+			mpu_Refresh=1;
+		}
+
+		if(strcmp((char *)UART_recv_idle,"MPUOFF")==0)
+		{
+			mpu_flag=0;
+			memset(UART_recv_idle,'\0',Size);
+			mpu_Refresh=1;
+		}
 
 	}
 

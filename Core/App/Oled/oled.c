@@ -388,6 +388,11 @@ void refresh_oled()
 		OLED_refresh_flag=0;
 	}
 
+	if(mpu_Refresh==1)
+	{
+		OLED_Clear();
+		mpu_Refresh=0;
+	}
 }
 
 
