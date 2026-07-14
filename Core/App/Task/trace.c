@@ -65,7 +65,7 @@ void trace_task()
 	}
 	else
 	{
-		PWM_base=25;
+		PWM_base=24;
 	}
 	int kp=5;
 
@@ -77,20 +77,14 @@ void trace_task()
 /*-------------------循迹logic----------------------------循迹logic-------------------循迹logic-------------------循迹logic--------------------------------------------------------*/
 
 	///*--------------丢线/大角度偏离-------------*///
-	if(sensor[0]==1 && sensor[1]==1 && sensor[2]==1 && sensor[3]==1 && sensor[4]==1 && sensor[5]==1 && sensor[6]==1 && sensor[7]==1)
+	if(
+		(sensor[0]==1&&sensor[1]==1&&sensor[2]==1&&sensor[3]==1&&sensor[4]==1&&sensor[5]==1&&sensor[6]==1&&sensor[7]==1)
+	 || (sensor[0]==0&&sensor[1]==0&&sensor[2]==0&&sensor[3]==0&&sensor[4]==0&&sensor[5]==0&&sensor[6]==0&&sensor[7]==0)
+	 || (sensor[0]==1&&sensor[1]==0&&sensor[2]==0&&sensor[3]==0&&sensor[4]==0&&sensor[5]==0&&sensor[6]==0&&sensor[7]==1)
+	)
 	{
-		PWM_A=Last_PWM_A;
-		PWM_B=Last_PWM_B;
-	}
-	else if(sensor[0]==0 && sensor[1]==0 && sensor[2]==0 && sensor[3]==0 && sensor[4]==0 && sensor[5]==0 && sensor[6]==0 && sensor[7]==0)
-	{
-		PWM_A=Last_PWM_A;
-		PWM_B=Last_PWM_B;
-	}
-	else if(sensor[0]==1 && sensor[1]==0 && sensor[2]==0 && sensor[3]==0 && sensor[4]==0 && sensor[5]==0 && sensor[6]==0 && sensor[7]==1)
-	{
-		PWM_A=Last_PWM_A;
-		PWM_B=Last_PWM_B;
+		PWM_A = Last_PWM_A;
+		PWM_B = Last_PWM_B;
 	}
 
 	///*---------------丢线/大角度偏离-------------*///
@@ -107,7 +101,7 @@ void trace_task()
 		if(PWM_B>99){PWM_B=99;}
 		if(PWM_B<0){PWM_B=0;}
 	}
-//*--------------常规循迹计算-------------*//
+//*--------------常规循迹计算------------ -*//
 
 	Last_PWM_A=PWM_A;
 	Last_PWM_B=PWM_B;

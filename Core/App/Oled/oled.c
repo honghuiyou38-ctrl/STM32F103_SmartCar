@@ -367,6 +367,8 @@ void OLED_Init(void)
 
 /*-----刷新----*/
 
+extern TIM_HandleTypeDef htim4;
+
 extern uint8_t OLED_refresh_flag;
 extern _Bool mpu_Refresh;
 

@@ -27,13 +27,14 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "motor.h"
+#include "delay.h"
 #include "string.h"
 #include "oled.h"
 #include "hc_cont.h"
 #include "key.h"
 #include "trace.h"
 #include "mpu6050.h"
-#include "shape.h"
+#include "hc_sr04.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,7 +63,9 @@ unsigned char buf[60]={0};
 uint8_t OLED_refresh_flag=0;
 _Bool LED1_State=0;
 _Bool mpu_Refresh=0;
+_Bool LED2_State=0;
 uint8_t UART_recv_idle[UART_recv_idle_Size]={0};
+extern float Distance;
 
 /* USER CODE END PV */
 
@@ -101,7 +104,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  DWT_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -111,10 +114,9 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   MX_I2C2_Init();
-  MX_TIM1_Init();
   MX_TIM4_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
@@ -125,6 +127,7 @@ int main(void)
   OLED_Clear();
 
   MPU6050_Init();
+  HAL_TIM_Base_Start(&htim2);
 
   /* USER CODE END 2 */
 
@@ -137,10 +140,8 @@ int main(void)
 //	      sprintf(buf,"pitch:%.2f roll:%.2f yaw:%.2f",pitch,roll,yaw);
 //	     			  OLED_ShowString(0,0,buf,8);
 
-//	  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 5);
-
+/*-------------蓝牙模式-------------*/
 	  refresh_oled();
-
 
 	  if(mode_flag==1||mode_flag==2)
 	  {
@@ -149,17 +150,18 @@ int main(void)
 			  direction_Forward();
 			  motor_PWM(wheel_PWM_A , wheel_PWM_B);
 		  }
-
 		  if(mode_flag==2)
 		  {
 			  direction_back();
 			  motor_PWM(wheel_PWM_A , wheel_PWM_B);
 		  }
 
-			  OLED_ShowString(0,0,"speed:",16);
-			  sprintf(buf,"PWM_A:%u,PWM_B:%u", (uint8_t)wheel_PWM_A, (uint8_t)wheel_PWM_B);
-			  OLED_ShowString(0,4,buf,16);
+		  OLED_ShowString(0,0,"speed:",16);
+		  sprintf(buf,"PWM_A:%u,PWM_B:%u", (uint8_t)wheel_PWM_A, (uint8_t)wheel_PWM_B);
+		  OLED_ShowString(0,4,buf,16);
 	  }
+/*-------------蓝牙模式-------------*/
+
 
 /*-------------循迹模式-------------*/
 	  if(LED1_State==1)
@@ -171,13 +173,20 @@ int main(void)
 
 /*-------------循迹模式------------*/
 
-///*-------------陀螺仪训练------------*/
 
+/*-------------避障模式-------------*/
+	  if(LED2_State==1)
+	  {
+		  mode_flag=0;
+		  avoid_obstacles_task();
+
+	  }
+/*-------------避障模式------------*/
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	 }
+  }
   /* USER CODE END 3 */
 }
 

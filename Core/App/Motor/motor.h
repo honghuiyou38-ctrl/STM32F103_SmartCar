@@ -5,6 +5,7 @@
 #include "i2c.h"
 #include "tim.h"
 #include "gpio.h"
+#include "mpu6050.h"
 
 /*-------------方向direction----------------------- 方向direction ----------------------*/
 void direction_Forward(void);
@@ -16,5 +17,7 @@ void direction_back(void);
 /*-------------速度speed-----------------------速度speed----------------------*/
 void motor_PWM(uint8_t PWMA , uint8_t PWMB);
 /*-------------速度speed-----------------------速度speed----------------------*/
+
+void Turn_Left_90(void);
 
 #endif
